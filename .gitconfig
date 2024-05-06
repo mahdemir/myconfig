@@ -16,4 +16,5 @@
 	b = branch -a
 	com = commit -m
 	alias = config --get-regexp ^alias\\.
-	cl = git
+	cl = clone
+
