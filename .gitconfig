@@ -4,7 +4,7 @@
 	required = true
 	clean = git-lfs clean -- %f
 [user]
-	name = mademir
+	name = mahdemir
 	email = mahdemir@users.noreply.github.com
 [push]
 	default = current
