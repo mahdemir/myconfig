@@ -1,0 +1,23 @@
+{
+	"editor.fontSize": 14,
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+	"editor.tabSize": 4,
+	"workbench.panel.defaultLocation": "right",
+	"explorer.confirmDelete": false,
+	"codamheader.CodamEmail": "mademir@student.codam.nl",
+	"codamheader.CodamUsername": "mademir",
+	"explorer.confirmDragAndDrop": false,
+	"security.workspace.trust.untrustedFiles": "open",
+	"git.openRepositoryInParentFolders": "never",
+	"files.associations": {
+		"*.tpp": "cpp"
+	},
+	"extensions.ignoreRecommendations": true,
+	"workbench.colorTheme": "Default High Contrast",
+	"workbench.iconTheme": "material-icon-theme",
+	"files.autoSave": "onFocusChange",
+	"notebook.editorOptionsCustomizations": {
+		"editor.insertSpaces": false
+	},
+}

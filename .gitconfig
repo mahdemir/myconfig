@@ -1,0 +1,19 @@
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
+[user]
+	name = mademir
+	email = mahdemir@users.noreply.github.com
+[push]
+	default = current
+[alias]
+	co = checkout
+	s = status
+	sw = switch
+	br = branch
+	b = branch -a
+	com = commit -m
+	alias = config --get-regexp ^alias\\.
+	cl = git
