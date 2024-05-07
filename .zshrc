@@ -1,5 +1,6 @@
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
+export GIT_CONFIG_GLOBAL=~/.myconfig/.gitconfig
 
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
@@ -95,8 +96,13 @@ function gitpush() {
 	if [[ -n "$1" ]]; then
 		git add . && git commit -m "$1"; git push;
 	else
-		git add . && git commit -m "automated push" ; git push;
+		git add . && git commit -m "automated push"; git push;
 	fi
+}
+
+function pushconfig() {
+    cd ~/.myconfig || return 1
+    git add . && git commit -m "Update configuration"; git push;
 }
 
 # fzf cmd required
