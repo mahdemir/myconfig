@@ -20,18 +20,6 @@ zstyle ':omz:update' mode reminder  # just remind me to update when it's time
 # Uncomment the following line to change how often to auto-update (in days).
 zstyle ':omz:update' frequency 7
 
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
 # Uncomment the following line if you want to disable marking untracked files
 # under VCS as dirty. This makes repository status check for large repositories
 # much, much faster.
@@ -45,14 +33,8 @@ zstyle ':omz:update' frequency 7
 # see 'man strftime' for details.
 HIST_STAMPS="%d/%m %H:%M"
 
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
 plugins=(
     git
     web-search
@@ -92,6 +74,10 @@ alias mr='make re'
 alias mc='make clean'
 alias mf='make fclean'
 
+# helpers
+alias confirm_removal="read -q 'REPLY?Remove these files? (y/n) '; [[ \$REPLY = [Yy] ]]"
+
+# alias functions
 function gitpush() {
 	if [[ -n "$1" ]]; then
 		git add . && git commit -m "$1"; git push;
@@ -100,18 +86,42 @@ function gitpush() {
 	fi
 }
 
-function pushconfig() {
+function pullconfig() {
     cd ~/.myconfig || return 1
-    git add . && git commit -m "Update configuration"; git push;
+    git pull
 }
 
-# fzf cmd required
+function pushconfig() {
+    cd ~/.myconfig || return 1
+	git pull; git add .; git commit -m "Update configuration"; git push;
+}
+
+# fzf required
 function fh() {
 	if [ -z "$*" ]; then
         eval $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//')
 	else
         history 1 | egrep --color=auto "$@"
     fi
+}
+
+rmall() {
+	local appname=$1
+
+	if [[ ! -n "$1" ]]; then
+		echo "Usage: <file/application name to remove>"
+	elif [[ -n $(mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates") ]]; then
+		echo "Found the following files related to $appname:"
+		printf '%s\n' "$(mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates" | sed 's/ /\\ /g')"
+		if confirm_removal; then
+			echo "\n"
+			mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates" | sed 's/ /\\ /g' | xargs -I {} sudo rm -rf "{}"
+		else
+			echo "\nRemoving $appname canceled"
+		fi
+	else
+		echo "No files found related to $appname."
+	fi
 }
 
 # Personal device only
