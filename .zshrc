@@ -124,6 +124,10 @@ rmall() {
 	fi
 }
 
+rmapp() {
+    rmall "$@"
+}
+
 # Personal device only
 if [[ $(hostname) == "MacBook-Pro-van-Mahmut.local" ]]; then
 	# Ruby version manager init, rbenv
