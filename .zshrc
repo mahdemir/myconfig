@@ -1,3 +1,11 @@
+# System check
+if [[ $(uname) == "Linux" ]]; then
+	VSCODE_PATH="$HOME/.config/Code/User"
+else
+	VSCODE_PATH="$HOME/Library/Application Support/Code/User"
+fi
+
+# Exports
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
 export GIT_CONFIG_GLOBAL=~/.myconfig/.gitconfig
@@ -60,7 +68,7 @@ setopt HIST_NO_STORE             # Don't store history commands
 
 # Set personal aliases, overriding those provided by oh-my-zsh.
 # For a full list of active aliases, run `alias`.
-alias zshconfig='code ~/.zshrc'
+alias zshconfig='code ~/.myconfig/.zshrc'
 alias ohmyzsh='code ~/.oh-my-zsh'
 alias c='clear'
 alias l='ls -lFh'
@@ -74,26 +82,40 @@ alias mr='make re'
 alias mc='make clean'
 alias mf='make fclean'
 
-# helpers
+# Helpers
 alias confirm_removal="read -q 'REPLY?Remove these files? (y/n) '; [[ \$REPLY = [Yy] ]]"
 
-# alias functions
+# Alias functions
+function pullconfig() {
+	cd ~/.myconfig || return 1
+	git pull
+	if ! diff -q settings.json $VSCODE_PATH/settings.json > /dev/null 2>&1; then
+		if [[ $? -eq 2 ]]; then
+			echo "Error: diff command failed."
+			return 1
+		fi
+		cp -f settings.json $VSCODE_PATH/settings.json || return 1
+	fi
+}
+
+function pushconfig() {
+	cd ~/.myconfig || return 1
+	if ! diff -q $VSCODE_PATH/settings.json settings.json > /dev/null 2>&1; then
+		if [[ $? -eq 2 ]]; then
+			echo "Error: diff command failed."
+			return 1
+		fi
+		cp -f $VSCODE_PATH/settings.json . || return 1
+	fi
+	git add .; git commit -m "Update configuration"; git push;
+}
+
 function gitpush() {
 	if [[ -n "$1" ]]; then
 		git add . && git commit -m "$1"; git push;
 	else
 		git add . && git commit -m "automated push"; git push;
 	fi
-}
-
-function pullconfig() {
-    cd ~/.myconfig || return 1
-    git pull
-}
-
-function pushconfig() {
-    cd ~/.myconfig || return 1
-	git pull; git add .; git commit -m "Update configuration"; git push;
 }
 
 # fzf required

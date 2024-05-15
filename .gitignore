@@ -1,0 +1,4 @@
+.zsh_history
+.zcompdump*
+.DS_Store
+.vscode

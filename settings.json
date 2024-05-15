@@ -20,4 +20,5 @@
 	"notebook.editorOptionsCustomizations": {
 		"editor.insertSpaces": false
 	},
+	"workbench.startupEditor": "none",
 }
