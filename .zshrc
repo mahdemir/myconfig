@@ -8,7 +8,7 @@ fi
 # Exports
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
-export GIT_CONFIG_GLOBAL=~/.myconfig/.gitconfig
+export GIT_CONFIG_GLOBAL=$HOME/.myconfig/.gitconfig
 
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="robbyrussell"
@@ -68,8 +68,8 @@ setopt HIST_NO_STORE             # Don't store history commands
 
 # Set personal aliases, overriding those provided by oh-my-zsh.
 # For a full list of active aliases, run `alias`.
-alias zshconfig='code ~/.myconfig/.zshrc'
-alias ohmyzsh='code ~/.oh-my-zsh'
+alias zshconfig='code $HOME/.myconfig/.zshrc'
+alias ohmyzsh='code $HOME/.oh-my-zsh'
 alias c='clear'
 alias l='ls -lFh'
 alias la='ls -lAFh'
@@ -82,12 +82,14 @@ alias mr='make re'
 alias mc='make clean'
 alias mf='make fclean'
 
-# Helpers
 alias confirm_removal="read -q 'REPLY?Remove these files? (y/n) '; [[ \$REPLY = [Yy] ]]"
 
-# Alias functions
+function editconfig() {
+	code $HOME/.myconfig
+}
+
 function pullconfig() {
-	cd ~/.myconfig || return 1
+	cd $HOME/.myconfig || return 1
 	git pull
 	if ! diff -q settings.json $VSCODE_PATH/settings.json > /dev/null 2>&1; then
 		if [[ $? -eq 2 ]]; then
@@ -99,7 +101,7 @@ function pullconfig() {
 }
 
 function pushconfig() {
-	cd ~/.myconfig || return 1
+	cd $HOME/.myconfig || return 1
 	if ! diff -q $VSCODE_PATH/settings.json settings.json > /dev/null 2>&1; then
 		if [[ $? -eq 2 ]]; then
 			echo "Error: diff command failed."
@@ -157,13 +159,13 @@ if [[ $(hostname) == "MacBook-Pro-van-Mahmut.local" ]]; then
 
 	alias py='python3'
 	alias pip='pip3'
-	alias 42='cd ~/Desktop/42cursus'
+	alias 42='cd $HOME/Desktop/42cursus'
 
 	function tolinux() {
 		if [[ ! -n "$1" ]]; then
-			cp -rf $PWD ~/VirtualBox\ VMs/Lubuntu\ 22.04.3/Gedeelde\ Map/
+			cp -rf $PWD $HOME/VirtualBox\ VMs/Lubuntu\ 22.04.3/Gedeelde\ Map/
 		else
-			cp -rf "$1" ~/VirtualBox\ VMs/Lubuntu\ 22.04.3/Gedeelde\ Map/
+			cp -rf "$1" $HOME/VirtualBox\ VMs/Lubuntu\ 22.04.3/Gedeelde\ Map/
 		fi
 	}
 fi
