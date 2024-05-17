@@ -1,8 +1,12 @@
 # System check
 if [[ $(uname) == "Linux" ]]; then
 	VSCODE_PATH="$HOME/.config/Code/User"
+	alias perm='stat --format "%a"'
+	alias permf='stat --format "%A"'
 else
 	VSCODE_PATH="$HOME/Library/Application Support/Code/User"
+	alias perm='stat -f "%A"'
+	alias permf='stat -f "%Sp"'
 fi
 
 # Exports
