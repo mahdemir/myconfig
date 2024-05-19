@@ -173,3 +173,9 @@ if [[ $(hostname) == "MacBook-Pro-van-Mahmut.local" ]]; then
 		fi
 	}
 fi
+
+# VM-Linux (Testing)
+if [[ $(hostname) == "VM-Linux" ]]; then
+	alias goshared='cd /media/sf_Gedeelde_Map/'
+	cd /media/sf_Gedeelde_Map/
+fi
