@@ -11,6 +11,7 @@ fi
 
 # Exports
 export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=/usr/local/sbin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
 export GIT_CONFIG_GLOBAL=$HOME/.myconfig/.gitconfig
 
@@ -158,8 +159,27 @@ rmapp() {
 
 # Personal device only
 if [[ $(hostname) == "MacBook-Pro-van-Mahmut.local" ]]; then
+	# Split terminmal vertically on startup
+	if [ ! -f /tmp/iterm_split_flag ]; then
+		touch /tmp/iterm_split_flag
+		osascript << EOF
+	tell application "iTerm2"
+		tell current session of current window
+			split vertically with same profile
+		end tell
+	end tell
+EOF
+	sleep 0.5
+	rm -f /tmp/iterm_split_flag
+	fi
+
 	# Ruby version manager init, rbenv
 	eval "$(rbenv init - zsh)"
+
+	# pyenv version manager
+	export PYENV_ROOT="$HOME/.pyenv"
+	[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+	eval "$(pyenv init -)"
 
 	alias py='python3'
 	alias pip='pip3'
