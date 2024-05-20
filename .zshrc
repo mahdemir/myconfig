@@ -49,10 +49,10 @@ HIST_STAMPS="%d/%m %H:%M"
 # Standard plugins can be found in $ZSH/plugins/
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 plugins=(
-    git
-    web-search
-    history
-    zsh-autosuggestions
+	git
+	web-search
+	history
+	zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -114,24 +114,28 @@ function pushconfig() {
 		fi
 		cp -f $VSCODE_PATH/settings.json . || return 1
 	fi
-	git add .; git commit -m "Update configuration"; git push;
+	if [[ -n "$1" ]]; then
+		git add .; git commit -m "$1"; git push;
+	else
+		git add .; git commit -m "Update configuration"; git push;
+	fi
 }
 
 function gitpush() {
 	if [[ -n "$1" ]]; then
-		git add . && git commit -m "$1"; git push;
+		git add .; git commit -m "$1"; git push;
 	else
-		git add . && git commit -m "automated push"; git push;
+		git add .; git commit -m "automated push"; git push;
 	fi
 }
 
 # fzf required
 function fh() {
 	if [ -z "$*" ]; then
-        eval $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//')
+		eval $( ([ -n "$ZSH_NAME" ] && fc -l 1 || history) | fzf +s --tac | sed 's/ *[0-9]* *//')
 	else
-        history 1 | egrep --color=auto "$@"
-    fi
+		history 1 | egrep --color=auto "$@"
+	fi
 }
 
 rmall() {
@@ -154,24 +158,40 @@ rmall() {
 }
 
 rmapp() {
-    rmall "$@"
+	rmall "$@"
 }
 
 # Personal device only
 if [[ $(hostname) == "MacBook-Pro-van-Mahmut.local" ]]; then
-	# Split terminmal vertically on startup
-	if [ ! -f /tmp/iterm_split_flag ]; then
-		touch /tmp/iterm_split_flag
-		osascript << EOF
-	tell application "iTerm2"
-		tell current session of current window
-			split vertically with same profile
-		end tell
-	end tell
+
+	check_window() {
+	toCompare=$(osascript -e 'tell application "iTerm2" to count of windows')
+    if [ $1 -eq toCompare ]; then
+        return 0  # true
+    else
+        return 1  # false
+    fi
+}
+
+	# Split terminal vertically on startup
+	WINDOW_COUNT=$(osascript -e 'tell application "iTerm2" to count of windows')
+	
+	for ((i = 1; i <= $WINDOW_COUNT; i++)); do
+		if [ $WINDOW_COUNT -eq $i ]; then
+			if [ ! -f /tmp/window_flag_${i} ]; then
+				osascript << EOF
+					tell application "iTerm2"
+						tell current session of current window
+							split vertically with same profile
+						end tell
+					end tell
 EOF
-	sleep 0.5
-	rm -f /tmp/iterm_split_flag
-	fi
+			fi
+			touch /tmp/window_flag_${i}
+		fi
+		j=$i
+	done
+	trap '$HOME/Library/Services/Scripts/check_iterm_window.sh $j' EXIT
 
 	# Ruby version manager init, rbenv
 	eval "$(rbenv init - zsh)"
