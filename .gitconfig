@@ -18,5 +18,3 @@
 	alias = config --get-regexp ^alias\\.
 	cl = clone
 	ls = ls-files
-[safe]
-	directory = *
