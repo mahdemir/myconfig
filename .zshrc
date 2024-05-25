@@ -204,6 +204,7 @@ EOF
 	alias py='python3'
 	alias pip='pip3'
 	alias 42='cd $HOME/Desktop/42cursus'
+	alias goshared='cd $HOME/VirtualBox\ VMs/Lubuntu\ 22.04.3/Gedeelde\ Map'
 
 	function tolinux() {
 		if [[ ! -n "$1" ]]; then
