@@ -114,18 +114,41 @@ function pushconfig() {
 		fi
 		cp -f $VSCODE_PATH/settings.json . || return 1
 	fi
+
 	if [[ -n "$1" ]]; then
-		git add .; git commit -m "$1"; git push;
+		git add .
+		git commit -m "$1"
+		git push
 	else
-		git add .; git commit -m "Update configuration"; git push;
+		git add .
+		git commit -m "Update configuration"
+		git push
 	fi
 }
 
 function gitpush() {
 	if [[ -n "$1" ]]; then
-		git add .; git commit -m "$1"; git push;
+		git add .
+		git commit -m "$1"
+		git push
 	else
-		git add .; git commit -m "automated push"; git push;
+		git add .
+		git commit -m "automated push"
+		git push
+	fi
+}
+
+function gitpushboth() {
+	if [[ -n "$1" ]]; then
+		git add .
+		git commit -m "$1"
+		git push
+		git push intra_repo main
+	else
+		git add .
+		git commit -m "automated push"
+		git push
+		git push intra_repo main
 	fi
 }
 

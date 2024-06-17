@@ -12,9 +12,11 @@
 	co = checkout
 	s = status
 	sw = switch
-	br = branch
-	b = branch -a
+	b = branch
+	ba = branch -a
 	com = commit -m
 	alias = config --get-regexp ^alias\\.
 	cl = clone
 	ls = ls-files
+	last = log -1 HEAD
+	cll = clone --depth 1
