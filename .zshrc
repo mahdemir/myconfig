@@ -1,17 +1,50 @@
+# HOW TO USE .zshrc file on different location:
+# Make an .zshenv file with this content, and put it in place of the old .zshrc file
+# ZDOTDIR=~/.myconfig
+
 # System check
-if [[ $(uname) == "Linux" ]]; then
+if [[ -d "/mnt/c" ]]; then
+	VSCODE_PATH="/mnt/c/Users/MD/AppData/Roaming/Code/User"
+	alias open=explorer.exe
+	alias perm='stat --format "%a"'
+	alias permf='stat --format "%A"'
+elif [[ $(uname) == "Linux" ]]; then
 	VSCODE_PATH="$HOME/.config/Code/User"
 	alias perm='stat --format "%a"'
 	alias permf='stat --format "%A"'
-else
+elif [[ $(uname) == "Darwin" ]]; then
 	VSCODE_PATH="$HOME/Library/Application Support/Code/User"
 	alias perm='stat -f "%A"'
 	alias permf='stat -f "%Sp"'
+	export PATH=$HOME/bin:/usr/local/bin:$PATH
+	export PATH=/usr/local/sbin:$PATH
+
+	alias confirm_removal="read -q 'REPLY?Remove these files? (y/n) '; [[ \$REPLY = [Yy] ]]"
+	rmall() {
+		local appname=$1
+
+		if [[ ! -n "$1" ]]; then
+			echo "Usage: <file/application name to remove>"
+		elif [[ -n $(mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates") ]]; then
+			echo "Found the following files related to $appname:"
+			printf '%s\n' "$(mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates" | sed 's/ /\\ /g')"
+			if confirm_removal; then
+				echo "\n"
+				mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates" | sed 's/ /\\ /g' | xargs -I {} sudo rm -rf "{}"
+			else
+				echo "\nRemoving $appname canceled"
+			fi
+		else
+			echo "No files found related to $appname."
+		fi
+	}
+
+	rmapp() {
+		rmall "$@"
+	}
 fi
 
 # Exports
-export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH=/usr/local/sbin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
 export GIT_CONFIG_GLOBAL=$HOME/.myconfig/.gitconfig
 
@@ -73,8 +106,6 @@ setopt HIST_NO_STORE             # Don't store history commands
 
 # Set personal aliases, overriding those provided by oh-my-zsh.
 # For a full list of active aliases, run `alias`.
-alias zshconfig='code $HOME/.myconfig/.zshrc'
-alias ohmyzsh='code $HOME/.oh-my-zsh'
 alias c='clear'
 alias l='ls -lFh'
 alias la='ls -lAFh'
@@ -82,12 +113,13 @@ alias lr='ls -tRFh'
 alias lh='ls -ld .*'
 alias ll='ls -1Fcrt'
 alias lla='ls -1Fcart'
+alias lsa='ls -a'
 alias m='make'
 alias mr='make re'
 alias mc='make clean'
 alias mf='make fclean'
-
-alias confirm_removal="read -q 'REPLY?Remove these files? (y/n) '; [[ \$REPLY = [Yy] ]]"
+alias py='python3'
+alias pip='pip3'
 
 function editconfig() {
 	code $HOME/.myconfig
@@ -138,20 +170,6 @@ function gitpush() {
 	fi
 }
 
-function gitpushboth() {
-	if [[ -n "$1" ]]; then
-		git add .
-		git commit -m "$1"
-		git push
-		git push intra_repo main
-	else
-		git add .
-		git commit -m "automated push"
-		git push
-		git push intra_repo main
-	fi
-}
-
 # fzf required
 function fh() {
 	if [ -z "$*" ]; then
@@ -160,86 +178,3 @@ function fh() {
 		history 1 | egrep --color=auto "$@"
 	fi
 }
-
-rmall() {
-	local appname=$1
-
-	if [[ ! -n "$1" ]]; then
-		echo "Usage: <file/application name to remove>"
-	elif [[ -n $(mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates") ]]; then
-		echo "Found the following files related to $appname:"
-		printf '%s\n' "$(mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates" | sed 's/ /\\ /g')"
-		if confirm_removal; then
-			echo "\n"
-			mdfind -name "$appname" 2>&1 | grep -v "Loading keywords and predicates" | sed 's/ /\\ /g' | xargs -I {} sudo rm -rf "{}"
-		else
-			echo "\nRemoving $appname canceled"
-		fi
-	else
-		echo "No files found related to $appname."
-	fi
-}
-
-rmapp() {
-	rmall "$@"
-}
-
-# Personal device only
-if [[ $(hostname) == "MacBook-Pro-van-Mahmut.local" ]]; then
-
-	check_window() {
-	toCompare=$(osascript -e 'tell application "iTerm2" to count of windows')
-    if [ $1 -eq toCompare ]; then
-        return 0  # true
-    else
-        return 1  # false
-    fi
-}
-
-	# Split terminal vertically on startup
-	WINDOW_COUNT=$(osascript -e 'tell application "iTerm2" to count of windows')
-	
-	for ((i = 1; i <= $WINDOW_COUNT; i++)); do
-		if [ $WINDOW_COUNT -eq $i ]; then
-			if [ ! -f /tmp/window_flag_${i} ]; then
-				osascript << EOF
-					tell application "iTerm2"
-						tell current session of current window
-							split vertically with same profile
-						end tell
-					end tell
-EOF
-			fi
-			touch /tmp/window_flag_${i}
-		fi
-		j=$i
-	done
-	trap '$HOME/Library/Services/Scripts/check_iterm_window.sh $j' EXIT
-
-	# Ruby version manager init, rbenv
-	eval "$(rbenv init - zsh)"
-
-	# pyenv version manager
-	export PYENV_ROOT="$HOME/.pyenv"
-	[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-	eval "$(pyenv init -)"
-
-	alias py='python3'
-	alias pip='pip3'
-	alias 42='cd $HOME/Desktop/42cursus'
-	alias goshared='cd $HOME/VirtualBox\ VMs/Lubuntu\ 22.04.3/Gedeelde\ Map'
-
-	function tolinux() {
-		if [[ ! -n "$1" ]]; then
-			cp -rf $PWD $HOME/VirtualBox\ VMs/Lubuntu\ 22.04.3/Gedeelde\ Map/
-		else
-			cp -rf "$1" $HOME/VirtualBox\ VMs/Lubuntu\ 22.04.3/Gedeelde\ Map/
-		fi
-	}
-fi
-
-# VM-Linux (Testing)
-if [[ $(hostname) == "VM-Linux" ]]; then
-	alias goshared='cd /media/sf_Gedeelde_Map/'
-	cd /media/sf_Gedeelde_Map/
-fi
