@@ -16,8 +16,8 @@ elif [[ $(uname) == "Darwin" ]]; then
 	VSCODE_PATH="$HOME/Library/Application Support/Code/User"
 	alias perm='stat -f "%A"'
 	alias permf='stat -f "%Sp"'
-	export PATH=$HOME/bin:/usr/local/bin:$PATH
-	export PATH=/usr/local/sbin:$PATH
+	export PATH="/bin:/usr/bin:/usr/local/bin:$HOME/bin:/usr/local/sbin:$PATH"
+	export PATH="$PATH:/Applications/Visual Studio Code.app/Contents/Resources/app/bin"
 
 	alias confirm_removal="read -q 'REPLY?Remove these files? (y/n) '; [[ \$REPLY = [Yy] ]]"
 	rmall() {
@@ -134,6 +134,7 @@ function pullconfig() {
 			return 1
 		fi
 		cp -f settings.json $VSCODE_PATH/settings.json || return 1
+		echo "VSCode: settings.json is updated."
 	fi
 }
 
@@ -145,6 +146,7 @@ function pushconfig() {
 			return 1
 		fi
 		cp -f $VSCODE_PATH/settings.json . || return 1
+		echo "VSCode: settings.json is updated."
 	fi
 
 	if [[ -n "$1" ]]; then
